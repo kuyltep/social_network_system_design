@@ -1,0 +1,494 @@
+openapi: 3.0.3
+info:
+  title: Swagger VK API - OpenAPI 3.0
+  description: |-
+    VK API for course System Design
+  version: 1.0.11
+servers:
+  - url: https://vk.com/api/v1/
+tags:
+  - name: friend
+    description: Operations with friend entity
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: post
+    description: Operations about post
+    externalDocs:
+      description: Find out more about our store
+      url: http://swagger.io
+  - name: user
+    description: Operations about user
+  - name: chat
+    description: Operations about chat
+  - name: band
+    description: Operations about bands
+paths:
+  /friend/add/{userId}:
+    post:
+      tags:
+        - friend
+      summary: Add new friend
+      operationId: addFriend
+      description: Add new friend by Id
+      parameters:
+        - name: userId
+          description: Id user to add friend
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful add new friend
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        "422":
+          description: Validation exception
+        "401":
+          description: Unauthorized
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /friend/delete${userId}:
+    delete:
+      tags:
+        - friend
+      summary: Finds Pets by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: deleteFriend
+      parameters:
+        - name: userId
+          in: path
+          description: Id user to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: User not found
+        "422":
+          description: Validation exception
+        "401":
+          description: Unauthorized
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /friend/profile/{friendId}:
+    get:
+      tags:
+        - friend
+      summary: Get Friend Profile by Id
+      description: Get Friend Profile by Id
+      parameters:
+        - name: friendId
+          in: path
+          description: friend Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /user/friends:
+    get:
+      tags:
+        - user
+      summary: Find user friends
+      description: Get all friends for current user.
+      operationId: findUserFriends
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ""
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ""
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /user/profile:
+    get:
+      tags:
+        - user
+      summary: Get user profile
+      operationId: profileUser
+      parameters: []
+      responses:
+        "200":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: "Unauthorized"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /band/posts:
+    get:
+      tags:
+        - band
+      summary: Get posts for band
+      operationId: bandPosts
+      parameters:
+        - name: userId
+          in: query
+          required: False
+          description: userId for get user posts
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "401":
+          description: "Unauthorized"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /post/media/publish:
+    post:
+      tags:
+        - post
+      summary: Create media for post
+      operationId: postMediaPublish
+      requestBody:
+        description: create media
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Media"
+      responses:
+        "201":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Media"
+        "401":
+          description: "Unauthorized"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /post/publish:
+    post:
+      tags:
+        - post
+      summary: Create post
+      operationId: postPublish
+      requestBody:
+        description: create post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "201":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Post"
+        "401":
+          description: "Unauthorized"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /chat/{chatId}/messages:
+    get:
+      tags:
+        - chat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          description: chatId for messages
+          schema:
+            type: string
+      summary: Get messages for chat
+      operationId: getChatMessages
+      responses:
+        "200":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /chat/{chatId}/message:
+    post:
+      tags:
+        - chat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          description: chatId for messages
+          schema:
+            type: string
+      summary: Post messages to chat
+      operationId: postMessageToChat
+      requestBody:
+        description: Post message request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Message"
+      responses:
+        "200":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: "12345"
+        phone:
+          type: string
+          example: "12345"
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: "12345"
+        phone:
+          type: string
+          example: "12345"
+        friends:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        media:
+          type: object
+          items:
+            $ref: "#/components/schemas/Media"
+    Media:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        link:
+          type: string
+        title:
+          type: string
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        chat_id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        content:
+          type: string
+    Chat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+  securitySchemes:
+    vk_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://vk.com/api/v1/oauth/authorize
+          scopes:
+            write:user: modify user data
+            read:user: read data
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
