@@ -1,3 +1,5 @@
+-- Replication (Maser-Slave - Master and 3 Slaves - Failover) SemiSync AP
+-- Sharding (Key based (Hash) Coordinator Consistent Hashing 
 CREATE TYPE "MEIDA_TYPE" AS ENUM (
   'PHOTO',
   'VIDEO',
