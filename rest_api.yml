@@ -9,14 +9,8 @@ servers:
 tags:
   - name: friend
     description: Operations with friend entity
-    externalDocs:
-      description: Find out more
-      url: http://swagger.io
   - name: post
     description: Operations about post
-    externalDocs:
-      description: Find out more about our store
-      url: http://swagger.io
   - name: user
     description: Operations about user
   - name: chat
@@ -58,7 +52,7 @@ paths:
         - vk_auth:
             - write:user
             - read:user
-  /friend/delete${userId}:
+  /friend/delete/{userId}:
     delete:
       tags:
         - friend
@@ -203,9 +197,37 @@ paths:
           content:
             application/json:
               schema:
-                type: array
                 items:
                   $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: "Unauthorized"
+      security:
+        - vk_auth:
+            - write:user
+            - read:user
+  /user/band/${userId}:
+    get:
+      tags:
+        - user
+      summary: Get user band
+      operationId: userBand
+      parameters:
+        - name: userId
+          in: path
+          description: user Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: success operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
         "401":
           description: "Unauthorized"
       security:
